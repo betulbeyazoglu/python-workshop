@@ -61,8 +61,6 @@ def insert_task(title,description):
 
     return {'task_id':row[0], 'title':row[1], 'description':row[2], 'is_done':bool(row[3])}
 
-
-
 def change_task():
     update = f"""
     UPDATE todos
@@ -95,8 +93,6 @@ def remove_task(task):
 
 @app.route('/')
 def home():
-    #return "<h1><i> <center>Welcome to Betul's To-Do API Service </center></i></h1>"
-
     home=f""" <!DOCTYPE html>
     <html>
     <head>
@@ -109,9 +105,11 @@ def home():
     </html>"""
     return home
 
+
 @app.route('/todos', methods=['GET'])
 def get_tasks():
     return jsonify({'tasks':get_all_tasks()})
+
 
 @app.route('/todos/<int:task_id>', methods=["GET"])
 def get_task(task_id):
@@ -120,11 +118,13 @@ def get_task(task_id):
         abort(404)
     return jsonify({'task found':task})
 
+
 @app.route('/todos', methods=["POST"])
 def add_task():
     if not request.json or not 'title' in request.json:
         abort(400)
     return jsonify({'newly added task':insert_task(request.json['title'],request.json.get('description', ''))}), 201
+
 
 @app.route('/todos/<int:task_id>', methods=["PUT"])
 def update_task(task_id):
@@ -138,6 +138,7 @@ def update_task(task_id):
     task['is_done']=int(request.json.get('is_done', int(task['is_done'])))
     return jsonify({'updated task':change_task(task)})
 
+
 @app.route('/todos/<int:task_id>', methods=["DELETE"])
 def delete_task(task_id):
     task=find_task(task_id)
@@ -145,13 +146,16 @@ def delete_task(task_id):
         abort(404)
     return jsonify({'result':remove_task(task)})
 
+
 @app.errorhandler(404)
 def not_fount(error):
     return make_response(jsonify({'error':'Not Found'}), 404)
 
+
 @app.errorhandler(400)
 def bad_requestt(error):
     return make_response(jsonify({'error':'Not Found'}), 400)
+
 
 if __name__=='__main__':
     init_todo_db()
